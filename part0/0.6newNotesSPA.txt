@@ -1,0 +1,11 @@
+sequenceDiagram
+    participant browser
+    participant server
+
+    Note right of browser: User submit the data via form
+
+    browser->>server: POST https://studies.cs.helsinki.fi/exampleapp/new_note_spa
+    activate server
+    server-->>browser: Response {"message":"note created"}
+    deactivate server
+    Note right of browser: Browser add the new note to the page and send the note to the server as json data
