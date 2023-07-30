@@ -14,17 +14,25 @@ const Statistics = (props) => {
     averageScoreFn,
     positiveScoreFn,
   } = props;
-  return (
-    <>
-      <h2>Statistics</h2>
-      <p>good {goodValue}</p>
-      <p>neutral {neutralValue}</p>
-      <p>bad {badValue}</p>
-      <p>all {totalFeedbackValue}</p>
-      <p>average {averageScoreFn}</p>
-      <p>positive {positiveScoreFn} %</p>
-    </>
-  );
+  if (totalFeedbackValue !== 0) {
+    return (
+      <>
+        <h2>Statistics</h2>
+        <p>good {goodValue}</p>
+        <p>neutral {neutralValue}</p>
+        <p>bad {badValue}</p>
+        <p>all {totalFeedbackValue}</p>
+        <p>average {averageScoreFn}</p>
+        <p>positive {positiveScoreFn} %</p>
+      </>
+    );
+  } else {
+    return (
+      <>
+        <p>No feedback given</p>
+      </>
+    );
+  }
 };
 
 const App = () => {
@@ -39,9 +47,6 @@ const App = () => {
     const goodPoints = 1;
     const neutralPoints = 0;
     const badPoints = -1;
-    if (totalFeedbacks === 0) {
-      return "";
-    }
     return (
       (good * goodPoints + neutralPoints * neutralPoints + bad * badPoints) /
       totalFeedbacks
@@ -49,9 +54,6 @@ const App = () => {
   };
 
   const positiveScore = () => {
-    if (totalFeedbacks === 0) {
-      return "";
-    }
     return good / totalFeedbacks;
   };
 
