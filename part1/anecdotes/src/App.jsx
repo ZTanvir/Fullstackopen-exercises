@@ -18,6 +18,20 @@ const App = () => {
   ];
 
   const [selected, setSelected] = useState(0);
+  // solution of most votes using object
+  // const [points, setPoints] = useState({
+  //   0: 0,
+  //   1: 0,
+  //   2: 0,
+  //   3: 0,
+  //   4: 0,
+  //   5: 0,
+  //   6: 0,
+  //   7: 0,
+  // });
+
+  // solution of most votes using array
+  const [points, setPoints] = useState(Array(anecdotes.length).fill(0));
 
   const generateRandomNumber = (max) => {
     return Math.floor(Math.random() * max);
@@ -26,10 +40,23 @@ const App = () => {
   const clickNextAnecdote = () => {
     setSelected(generateRandomNumber(anecdotes.length));
   };
+  const clickVoteAnecdote = () => {
+    // update object
+    // let copyPoints = { ...points };
+    // copyPoints[selected] += 1;
+    // setPoints({ ...copyPoints });
+    // update array
+    const copyPoints = [...points];
+    copyPoints[selected] += 1;
+    setPoints(copyPoints);
+  };
 
   return (
     <div>
       <p>{anecdotes[selected]}</p>
+      {/* <p>has {points[selected]} votes</p> */}
+      <p>has {points[selected]} votes</p>
+      <Button handleClick={clickVoteAnecdote} text="vote" />
       <Button handleClick={clickNextAnecdote} text="next anecdote" />
     </div>
   );
