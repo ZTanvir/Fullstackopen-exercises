@@ -19,22 +19,41 @@ const App = () => {
 
   const [selected, setSelected] = useState(0);
   // solution of most votes using object
-  // const [points, setPoints] = useState({
-  //   0: 0,
-  //   1: 0,
-  //   2: 0,
-  //   3: 0,
-  //   4: 0,
-  //   5: 0,
-  //   6: 0,
-  //   7: 0,
-  // });
+  const [points, setPoints] = useState({
+    0: 0,
+    1: 0,
+    2: 0,
+    3: 0,
+    4: 0,
+    5: 0,
+    6: 0,
+    7: 0,
+  });
 
   // solution of most votes using array
-  const [points, setPoints] = useState(Array(anecdotes.length).fill(0));
+  // const [points, setPoints] = useState(Array(anecdotes.length).fill(0));
 
   const generateRandomNumber = (max) => {
     return Math.floor(Math.random() * max);
+  };
+  const mostVotedAnecdotes = () => {
+    let highestValue = 0;
+    let highestValueIndex = null;
+    // for Array
+    // for (let point of points) {
+    //   if (point > highestValue) {
+    //     highestValue = point;
+    //   }
+    // }
+    // return points.indexOf(highestValue);
+    // For object
+    for (let point in points) {
+      if (points[point] > highestValue) {
+        highestValue = points[point];
+        highestValueIndex = point;
+      }
+    }
+    return Number(highestValueIndex);
   };
 
   const clickNextAnecdote = () => {
@@ -42,22 +61,25 @@ const App = () => {
   };
   const clickVoteAnecdote = () => {
     // update object
-    // let copyPoints = { ...points };
-    // copyPoints[selected] += 1;
-    // setPoints({ ...copyPoints });
-    // update array
-    const copyPoints = [...points];
+    let copyPoints = { ...points };
     copyPoints[selected] += 1;
-    setPoints(copyPoints);
+    setPoints({ ...copyPoints });
+    // update array
+    // const copyPoints = [...points];
+    // copyPoints[selected] += 1;
+    // setPoints(copyPoints);
   };
 
   return (
     <div>
+      <h1>Anecdote of the day</h1>
       <p>{anecdotes[selected]}</p>
-      {/* <p>has {points[selected]} votes</p> */}
       <p>has {points[selected]} votes</p>
       <Button handleClick={clickVoteAnecdote} text="vote" />
       <Button handleClick={clickNextAnecdote} text="next anecdote" />
+      <h2>Anecdote with most votes</h2>
+      <p>{anecdotes[mostVotedAnecdotes()]}</p>
+      <p>has {points[mostVotedAnecdotes()]} votes</p>
     </div>
   );
 };
