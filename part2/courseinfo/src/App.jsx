@@ -1,6 +1,7 @@
 const Header = ({ course }) => <h1>{course}</h1>;
 
 const Total = ({ parts }) => {
+  // Solution for both 2.2 and 2.3
   const totalExercise = parts.reduce((acc, cur) => acc + cur.exercises, 0);
 
   return (
