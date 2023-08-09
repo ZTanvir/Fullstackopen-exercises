@@ -13,12 +13,18 @@ const App = () => {
   const addName = (event) => {
     event.preventDefault();
     if (newName !== "") {
-      let uuid = self.crypto.randomUUID();
-      const newPerson = {
-        name: newName,
-        id: uuid,
-      };
-      setPersons(updatePersons.concat(newPerson));
+      // check if the name is already present in updatePersons
+      const matchPerson = persons.some((person) => person.name === newName);
+      if (matchPerson) {
+        alert(`${newName} is already added to phonebook`);
+      } else {
+        let uuid = self.crypto.randomUUID();
+        const newPerson = {
+          name: newName,
+          id: uuid,
+        };
+        setPersons(updatePersons.concat(newPerson));
+      }
       setNewName("");
     }
   };
