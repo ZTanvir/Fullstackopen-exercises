@@ -4,6 +4,7 @@ const App = () => {
   const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
+  const [searchName, setSearchName] = useState("");
 
   // Add phonenumber and id to the persons
   const updatePersons = persons.map((person) => {
@@ -42,9 +43,27 @@ const App = () => {
       </p>
     ));
   };
+  // Filter persons based on searchName
+  const filterPerson = persons.filter((person) => {
+    return person.name.toLocaleLowerCase().includes(searchName.toLowerCase());
+  });
   return (
     <div>
       <h2>Phonebook</h2>
+      <form>
+        <label>
+          filter shown with
+          <input
+            type="text"
+            value={searchName}
+            onChange={(event) => {
+              setSearchName(event.target.value);
+              console.log(searchName);
+            }}
+          />
+        </label>
+      </form>
+      <h2>add a new</h2>
       <form onSubmit={addName}>
         <div>
           <div>
@@ -76,7 +95,7 @@ const App = () => {
       <div>
         {persons.length === 1
           ? displayPersonsName(updatePersons)
-          : displayPersonsName(persons)}
+          : displayPersonsName(filterPerson)}
       </div>
     </div>
   );
