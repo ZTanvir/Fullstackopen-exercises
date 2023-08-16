@@ -1,11 +1,7 @@
-import { useState } from "react";
+import axios from "axios";
+import { useState, useEffect } from "react";
 
 const Person = ({ personList, findName }) => {
-  // Add phonenumber and id to the persons
-  const updatePersons = personList.map((person) => {
-    let uuid = self.crypto.randomUUID();
-    return { ...person, number: "040-1234567", id: uuid };
-  });
   // Display phonebook person name and number
   const displayPersonsName = (personsList) => {
     return personsList.map((person) => (
@@ -21,7 +17,7 @@ const Person = ({ personList, findName }) => {
   return (
     <div>
       {personList.length === 1
-        ? displayPersonsName(updatePersons)
+        ? displayPersonsName(personList)
         : displayPersonsName(filterPerson)}
     </div>
   );
@@ -80,16 +76,18 @@ const Filter = ({ findName, setFindName }) => {
   );
 };
 const App = () => {
-  const [persons, setPersons] = useState([{ name: "Arto Hellas" }]);
+  const [persons, setPersons] = useState([]);
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [searchName, setSearchName] = useState("");
 
-  // Add phonenumber and id to the persons
-  const updatePersons = persons.map((person) => {
-    let uuid = self.crypto.randomUUID();
-    return { ...person, number: "040-1234567", id: uuid };
-  });
+  // get person data from http://localhost:3000/persons
+  useEffect(() => {
+    axios.get("http://localhost:3000/persons").then((response) => {
+      let data = response.data;
+      setPersons(data);
+    });
+  }, []);
 
   // Add name and phone number to the persons when submit the form
   const addName = (event) => {
@@ -106,7 +104,7 @@ const App = () => {
           number: newPhoneNumber,
           id: uuid,
         };
-        setPersons(updatePersons.concat(newPerson));
+        setPersons(persons.concat(newPerson));
       }
       setNewName("");
       setNewPhoneNumber("");
