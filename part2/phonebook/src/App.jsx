@@ -1,18 +1,19 @@
-import axios from "axios";
 import { useState, useEffect } from "react";
+import noteServices from "./services/personsService";
 
-const Person = ({ personList, findName }) => {
+const Person = ({ personList, findName, handleDeletePerson }) => {
   // Display phonebook person name and number
   const displayPersonsName = (personsList) => {
     return personsList.map((person) => (
       <p key={person.id}>
-        {person.name} {person.number}
+        {person.name} {person.number}{" "}
+        <button onClick={() => handleDeletePerson(person.id)}>delete</button>
       </p>
     ));
   };
   // Filter persons based on searchName
   const filterPerson = personList.filter((person) => {
-    return person.name.toLocaleLowerCase().includes(findName.toLowerCase());
+    return person.name.toLowerCase().includes(findName.toLowerCase());
   });
   return (
     <div>
@@ -83,10 +84,7 @@ const App = () => {
 
   // get persons data from http://localhost:3000/persons
   useEffect(() => {
-    axios.get("http://localhost:3000/persons").then((response) => {
-      let data = response.data;
-      setPersons(data);
-    });
+    noteServices.getAll().then((data) => setPersons(data));
   }, []);
 
   // Add name and phone number to the persons when submit the form
@@ -103,14 +101,22 @@ const App = () => {
           number: newPhoneNumber,
         };
         // add new person name and phone number to json server
-        axios
-          .post("http://localhost:3000/persons", newPerson)
-          .then((response) => {
-            setPersons(persons.concat(response.data));
-          });
+        noteServices
+          .create(newPerson)
+          .then((data) => setPersons(persons.concat(data)));
         setNewName("");
         setNewPhoneNumber("");
       }
+    }
+  };
+  // Delete name from phone book
+  const deletePerson = (id) => {
+    const findPerson = persons.find((person) => person.id === id);
+    const isConfirmDelete = window.confirm(`Delete ${findPerson.name}?`);
+    if (isConfirmDelete) {
+      noteServices.deleteData(id).then((data) => {
+        setPersons(persons.filter((person) => person.id !== findPerson.id));
+      });
     }
   };
 
@@ -127,7 +133,11 @@ const App = () => {
         setPhone={setNewPhoneNumber}
       />
       <h3>Numbers</h3>
-      <Person personList={persons} findName={searchName} />
+      <Person
+        personList={persons}
+        findName={searchName}
+        handleDeletePerson={deletePerson}
+      />
     </div>
   );
 };
