@@ -81,7 +81,7 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [searchName, setSearchName] = useState("");
 
-  // get person data from http://localhost:3000/persons
+  // get persons data from http://localhost:3000/persons
   useEffect(() => {
     axios.get("http://localhost:3000/persons").then((response) => {
       let data = response.data;
@@ -98,16 +98,19 @@ const App = () => {
       if (matchPerson) {
         alert(`${newName} is already added to phonebook`);
       } else {
-        let uuid = self.crypto.randomUUID();
         const newPerson = {
           name: newName,
           number: newPhoneNumber,
-          id: uuid,
         };
-        setPersons(persons.concat(newPerson));
+        // add new person name and phone number to json server
+        axios
+          .post("http://localhost:3000/persons", newPerson)
+          .then((response) => {
+            setPersons(persons.concat(response.data));
+          });
+        setNewName("");
+        setNewPhoneNumber("");
       }
-      setNewName("");
-      setNewPhoneNumber("");
     }
   };
 
