@@ -92,9 +92,34 @@ const App = () => {
     event.preventDefault();
     if (newName !== "" && newPhoneNumber !== "") {
       // check if the name is already present in updatePersons
-      const matchPerson = persons.some((person) => person.name === newName);
-      if (matchPerson) {
-        alert(`${newName} is already added to phonebook`);
+      const isAnyPersonMatch = persons.some(
+        (person) => person.name === newName
+      );
+      if (isAnyPersonMatch) {
+        // find the person
+        const findPerson = persons.find((person) => person.name === newName);
+        console.log(findPerson);
+        // ask the permission to update the number
+        if (
+          window.confirm(
+            `${findPerson.name} is already added to phonebook, replace the old number with a new one?`
+          )
+        ) {
+          // update person number with new number
+          const updatePerson = { ...findPerson, number: newPhoneNumber };
+          // update the number in the db.json
+          noteServices.update(updatePerson.id, updatePerson).then((data) => {
+            // update the number in the persons state
+            setPersons(
+              persons.map((person) =>
+                person.name !== updatePerson.name ? person : updatePerson
+              )
+            );
+            setNewName("");
+            setNewPhoneNumber("");
+          });
+          console.log("Confirm");
+        }
       } else {
         const newPerson = {
           name: newName,
