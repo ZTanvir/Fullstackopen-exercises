@@ -1,5 +1,7 @@
 import { useState, useEffect } from "react";
+import Notification from "./component/Notification";
 import noteServices from "./services/personsService";
+import "/index.css";
 
 const Person = ({ personList, findName, handleDeletePerson }) => {
   // Display phonebook person name and number
@@ -81,6 +83,7 @@ const App = () => {
   const [newName, setNewName] = useState("");
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [searchName, setSearchName] = useState("");
+  const [message, setMessage] = useState(null);
 
   // get persons data from http://localhost:3000/persons
   useEffect(() => {
@@ -98,7 +101,6 @@ const App = () => {
       if (isAnyPersonMatch) {
         // find the person
         const findPerson = persons.find((person) => person.name === newName);
-        console.log(findPerson);
         // ask the permission to update the number
         if (
           window.confirm(
@@ -115,10 +117,16 @@ const App = () => {
                 person.name !== updatePerson.name ? person : updatePerson
               )
             );
+            // Add message that a new person has added to phonebook
+            setMessage(
+              `${updatePerson.name} phone number updated successfully`
+            );
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
             setNewName("");
             setNewPhoneNumber("");
           });
-          console.log("Confirm");
         }
       } else {
         const newPerson = {
@@ -129,6 +137,11 @@ const App = () => {
         noteServices
           .create(newPerson)
           .then((data) => setPersons(persons.concat(data)));
+        //Show a message that a new user has added
+        setMessage(`Added ${newPerson.name}`);
+        setTimeout(() => {
+          setMessage(null);
+        }, 5000);
         setNewName("");
         setNewPhoneNumber("");
       }
@@ -148,6 +161,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
+      <Notification message={message} />
       <Filter findName={searchName} setFindName={setSearchName} />
       <h3>add a new</h3>
       <PersonForm
