@@ -84,6 +84,7 @@ const App = () => {
   const [newPhoneNumber, setNewPhoneNumber] = useState("");
   const [searchName, setSearchName] = useState("");
   const [message, setMessage] = useState(null);
+  const [messageType, setMessageType] = useState(true);
 
   // get persons data from http://localhost:3000/persons
   useEffect(() => {
@@ -110,23 +111,35 @@ const App = () => {
           // update person number with new number
           const updatePerson = { ...findPerson, number: newPhoneNumber };
           // update the number in the db.json
-          noteServices.update(updatePerson.id, updatePerson).then((data) => {
-            // update the number in the persons state
-            setPersons(
-              persons.map((person) =>
-                person.name !== updatePerson.name ? person : updatePerson
-              )
-            );
-            // Add message that a new person has added to phonebook
-            setMessage(
-              `${updatePerson.name} phone number updated successfully`
-            );
-            setTimeout(() => {
-              setMessage(null);
-            }, 5000);
-            setNewName("");
-            setNewPhoneNumber("");
-          });
+          noteServices
+            .update(updatePerson.id, updatePerson)
+            .then((data) => {
+              // update the number in the persons state
+              setPersons(
+                persons.map((person) =>
+                  person.name !== updatePerson.name ? person : updatePerson
+                )
+              );
+              // Add message that a new person has added to phonebook
+              setMessage(
+                `${updatePerson.name} phone number updated successfully`
+              );
+              setTimeout(() => {
+                setMessage(null);
+              }, 5000);
+              setNewName("");
+              setNewPhoneNumber("");
+            })
+            .catch((error) => {
+              //Show a message that a new user has been already removed
+              setMessageType(true); //set the message to error message
+              setMessage(
+                `Information of ${updatePerson.name} has already been removed from server`
+              );
+              setTimeout(() => {
+                setMessage(null);
+              }, 5000);
+            });
         }
       } else {
         const newPerson = {
@@ -134,16 +147,17 @@ const App = () => {
           number: newPhoneNumber,
         };
         // add new person name and phone number to json server
-        noteServices
-          .create(newPerson)
-          .then((data) => setPersons(persons.concat(data)));
-        //Show a message that a new user has added
-        setMessage(`Added ${newPerson.name}`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
-        setNewName("");
-        setNewPhoneNumber("");
+        noteServices.create(newPerson).then((data) => {
+          setPersons(persons.concat(data));
+          //Show a message that a new user has added
+          setMessageType(false); //set the message to success message
+          setMessage(`Added ${newPerson.name}`);
+          setTimeout(() => {
+            setMessage(null);
+          }, 5000);
+          setNewName("");
+          setNewPhoneNumber("");
+        });
       }
     }
   };
@@ -161,7 +175,7 @@ const App = () => {
   return (
     <div>
       <h2>Phonebook</h2>
-      <Notification message={message} />
+      <Notification message={message} isErrorMessage={messageType} />
       <Filter findName={searchName} setFindName={setSearchName} />
       <h3>add a new</h3>
       <PersonForm
