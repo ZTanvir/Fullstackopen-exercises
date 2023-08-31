@@ -2,7 +2,8 @@ import { v4 as uuidv4 } from "uuid";
 
 const CountryInfo = ({ countryInformation }) => {
   // when the countryInformation object contain country information
-  if (Object.keys(countryInformation).length !== 0) {
+  const countryInformationSize = Object.keys(countryInformation).length;
+  if (countryInformationSize !== 0) {
     const language = Object.values(countryInformation.languages).map((item) => (
       <li key={uuidv4()}>{item}</li>
     ));

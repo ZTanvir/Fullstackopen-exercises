@@ -20,7 +20,6 @@ function App() {
         console.log("Data not found");
       });
   }, []);
-
   // get single country data
   useEffect(() => {
     if (filterCountry.length === 1) {
@@ -44,7 +43,6 @@ function App() {
       return country.toLowerCase().includes(findCountry.toLowerCase());
     }
   });
-
   //  Submit the form
   const searchCountry = (event) => {
     event.preventDefault();
