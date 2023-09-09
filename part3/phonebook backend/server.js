@@ -37,7 +37,20 @@ app.get("/api/persons", (request, response) => {
 });
 app.post("/api/persons", (request, response) => {
   const body = request.body;
-
+  // check does the name and number is available
+  if (!body.name || !body.number) {
+    return response.status(400).json({
+      error: "name or number is missing",
+    });
+  } else if (body.name) {
+    // check does the name is unique
+    const matchName = persons.some((person) => person.name === body.name);
+    if (matchName) {
+      return response.status(400).json({
+        error: "name must be unique",
+      });
+    }
+  }
   const person = {
     name: body.name,
     number: body.number,
