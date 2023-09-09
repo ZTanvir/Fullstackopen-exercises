@@ -1,9 +1,13 @@
 const express = require("express");
 const app = express();
 const PORT = 3001;
-
+app.use(express.json());
 // Date today
 const today = new Date();
+// generate random number
+const getRandomInt = (max) => {
+  return Math.floor(Math.random() * max);
+};
 
 let persons = [
   {
@@ -30,6 +34,17 @@ let persons = [
 
 app.get("/api/persons", (request, response) => {
   response.json(persons);
+});
+app.post("/api/persons", (request, response) => {
+  const body = request.body;
+
+  const person = {
+    name: body.name,
+    number: body.number,
+    id: getRandomInt(1000),
+  };
+  persons = persons.concat(person);
+  response.json(person);
 });
 
 app.get("/info", (request, response) => {
