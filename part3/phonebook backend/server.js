@@ -5,7 +5,7 @@ const PORT = 3001;
 // Date today
 const today = new Date();
 
-const persons = [
+let persons = [
   {
     id: 1,
     name: "Arto Hellas",
@@ -47,7 +47,12 @@ app.get("/api/persons/:id", (request, response) => {
     response.status(404).end();
   }
 });
-
+// delete
+app.delete("/api/persons/:id", (request, response) => {
+  const id = Number(request.params.id);
+  persons = persons.filter((person) => person.id !== id);
+  response.status(202).end();
+});
 app.listen(PORT, () => {
   console.log(`Server start at port ${PORT}`);
 });
