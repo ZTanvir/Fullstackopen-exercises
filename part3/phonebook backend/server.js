@@ -2,9 +2,29 @@ const express = require("express");
 const app = express();
 const PORT = 3001;
 // import morgan middleware
+// https://github.com/expressjs/morgan
 const morgan = require("morgan");
-app.use(morgan("tiny"));
+// create a custom format fuction
+// POST /api/persons 200 45 - 51.472 ms {"name":"example","number":"123456789"}
+const tinyWithPost = (tokens, req, res) => {
+  let postData = "";
+  if (req.body.name) {
+    postData = JSON.stringify(req.body);
+  }
+  return [
+    tokens.method(req, res),
+    tokens.url(req, res),
+    tokens.status(req, res),
+    tokens.res(req, res, "content-length"),
+    "-",
+    tokens["response-time"](req, res),
+    "ms",
+    postData,
+  ].join(" ");
+};
+app.use(morgan(tinyWithPost));
 app.use(express.json());
+
 // Date today
 const today = new Date();
 // generate random number
@@ -35,9 +55,11 @@ let persons = [
   },
 ];
 
+// routes
 app.get("/api/persons", (request, response) => {
   response.json(persons);
 });
+
 app.post("/api/persons", (request, response) => {
   const body = request.body;
   // check does the name and number is available
@@ -68,7 +90,7 @@ app.get("/info", (request, response) => {
     `<p>Phonebook has info for ${persons.length} people<br/>${today}</p>`
   );
 });
-// single route
+// single routes
 app.get("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   const person = persons.find((person) => person.id === id);
@@ -78,12 +100,13 @@ app.get("/api/persons/:id", (request, response) => {
     response.status(404).end();
   }
 });
-// delete
+
 app.delete("/api/persons/:id", (request, response) => {
   const id = Number(request.params.id);
   persons = persons.filter((person) => person.id !== id);
   response.status(202).end();
 });
+
 app.listen(PORT, () => {
-  console.log(`Server start at port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
