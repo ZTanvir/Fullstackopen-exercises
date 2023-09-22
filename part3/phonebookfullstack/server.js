@@ -1,9 +1,15 @@
+// import dotenv modules
+require("dotenv").config();
+
 const express = require("express");
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT;
+//import database module
+const Person = require("./modules/phone-number");
 // import cors
 const cors = require("cors");
 app.use(cors());
+
 // add front end to the server
 app.use(express.static("dist"));
 // import morgan middleware
@@ -30,39 +36,9 @@ const tinyWithPost = (tokens, req, res) => {
 app.use(morgan(tinyWithPost));
 app.use(express.json());
 
-// Date today
-const today = new Date();
-// generate random number
-const getRandomInt = (max) => {
-  return Math.floor(Math.random() * max);
-};
-
-let persons = [
-  {
-    id: 1,
-    name: "Arto Hellas",
-    number: "040-123456",
-  },
-  {
-    id: 2,
-    name: "Ada Lovelace",
-    number: "39-44-5323523",
-  },
-  {
-    id: 3,
-    name: "Dan Abramov",
-    number: "12-43-234345",
-  },
-  {
-    id: 4,
-    name: "Mary Poppendieck",
-    number: "39-23-6423122",
-  },
-];
-
 // routes
 app.get("/api/persons", (request, response) => {
-  response.json(persons);
+  Person.find({}).then((savePerson) => response.json(savePerson));
 });
 
 app.post("/api/persons", (request, response) => {
@@ -72,38 +48,29 @@ app.post("/api/persons", (request, response) => {
     return response.status(400).json({
       error: "name or number is missing",
     });
-  } else if (body.name) {
-    // check does the name is unique
-    const matchName = persons.some((person) => person.name === body.name);
-    if (matchName) {
-      return response.status(400).json({
-        error: "name must be unique",
-      });
-    }
   }
-  const person = {
+  const person = new Person({
     name: body.name,
     number: body.number,
-    id: getRandomInt(1000),
-  };
-  persons = persons.concat(person);
-  response.json(person);
+  });
+  person.save().then((createPerson) => response.json(createPerson));
 });
 
 app.get("/info", (request, response) => {
-  response.send(
-    `<p>Phonebook has info for ${persons.length} people<br/>${today}</p>`
-  );
+  Person.count().then((count) => {
+    response.send(`<p>Phonebook has info for ${count} people<br/>${today}</p>`);
+  });
 });
 // single routes
 app.get("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  const person = persons.find((person) => person.id === id);
-  if (person) {
-    response.json(person);
-  } else {
-    response.status(404).end();
-  }
+  const id = request.params.id;
+  console.log("id", id);
+  Person.findById(id)
+    .then((foundPerson) => response.json(foundPerson))
+    .catch((error) => {
+      console.log("Error api/persons/id get request:", error.message);
+      response.statusCode(404).end();
+    });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -112,6 +79,6 @@ app.delete("/api/persons/:id", (request, response) => {
   response.status(202).end();
 });
 
-app.listen(PORT, () => {
+app.listen(PORT || 3001, () => {
   console.log(`Server running on port ${PORT}`);
 });
