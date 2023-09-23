@@ -76,6 +76,8 @@ app.delete("/api/persons/:id", (request, response) => {
     .then((result) => response.status(200).end())
     .catch((error) => next(error));
 });
+
+
 // error handing middleware function
 const handleError = (error, request, response, next) => {
   console.log("Error message", error.name);
