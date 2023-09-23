@@ -77,6 +77,19 @@ app.delete("/api/persons/:id", (request, response) => {
     .catch((error) => next(error));
 });
 
+app.put("/api/persons/:id", (request, response, next) => {
+  const id = request.params.id;
+  const body = request.body;
+  const person = {
+    name: body.name,
+    number: body.number,
+  };
+  Person.findByIdAndUpdate(id, person, { new: true })
+    .then((updatePerson) => {
+      response.json(updatePerson);
+    })
+    .catch((error) => next(error));
+});
 
 // error handing middleware function
 const handleError = (error, request, response, next) => {
