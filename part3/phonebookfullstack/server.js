@@ -57,19 +57,17 @@ app.post("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
+  const today = new Date();
   Person.count().then((count) => {
     response.send(`<p>Phonebook has info for ${count} people<br/>${today}</p>`);
   });
 });
 // single routes
-app.get("/api/persons/:id", (request, response) => {
+app.get("/api/persons/:id", (request, response, next) => {
   const id = request.params.id;
   Person.findById(id)
     .then((foundPerson) => response.json(foundPerson))
-    .catch((error) => {
-      console.log("Error api/persons/id get request:", error.message);
-      response.status(404).end();
-    });
+    .catch((error) => next(error));
 });
 
 app.delete("/api/persons/:id", (request, response) => {
@@ -78,7 +76,17 @@ app.delete("/api/persons/:id", (request, response) => {
     .then((result) => response.status(200).end())
     .catch((error) => next(error));
 });
-
+// error handing middleware function
+const handleError = (error, request, response, next) => {
+  console.log("Error message", error.name);
+  if (error.name === "CastError") {
+    response.status(404).send({
+      error: "malformatted id",
+    });
+  }
+  next(error);
+};
+app.use(handleError);
 app.listen(PORT || 3001, () => {
   console.log(`Server running on port ${PORT}`);
 });
