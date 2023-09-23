@@ -64,19 +64,19 @@ app.get("/info", (request, response) => {
 // single routes
 app.get("/api/persons/:id", (request, response) => {
   const id = request.params.id;
-  console.log("id", id);
   Person.findById(id)
     .then((foundPerson) => response.json(foundPerson))
     .catch((error) => {
       console.log("Error api/persons/id get request:", error.message);
-      response.statusCode(404).end();
+      response.status(404).end();
     });
 });
 
 app.delete("/api/persons/:id", (request, response) => {
-  const id = Number(request.params.id);
-  persons = persons.filter((person) => person.id !== id);
-  response.status(202).end();
+  const id = request.params.id;
+  Person.findByIdAndRemove(id)
+    .then((result) => response.status(200).end())
+    .catch((error) => next(error));
 });
 
 app.listen(PORT || 3001, () => {
