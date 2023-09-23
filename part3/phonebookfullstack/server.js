@@ -57,9 +57,13 @@ app.post("/api/persons", (request, response) => {
 });
 
 app.get("/info", (request, response) => {
-  const today = new Date();
-  Person.count().then((count) => {
-    response.send(`<p>Phonebook has info for ${count} people<br/>${today}</p>`);
+  // Todays date and time
+  const dateTimeNow = new Date();
+  // Check how many objects are in person document
+  Person.count().then((totalDocument) => {
+    response.send(
+      `<p>Phonebook has info for ${totalDocument} people<br/>${dateTimeNow}</p>`
+    );
   });
 });
 // single routes
