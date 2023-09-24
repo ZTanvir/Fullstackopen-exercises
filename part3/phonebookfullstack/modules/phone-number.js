@@ -14,7 +14,29 @@ const personSchema = mongoose.Schema({
     minLength: 3,
     require: true,
   },
-  number: String,
+  number: {
+    type: String,
+    minLength: 8,
+    //phone number must be 123-123(min 3 digit before and after -) formate
+    validate: {
+      validator: function (phoneNumber) {
+        if (!phoneNumber.includes("-")) {
+          return false;
+        } else if (phoneNumber.includes("-")) {
+          let splitDashWord = phoneNumber.split("-");
+          if (
+            splitDashWord.length > 2 || //10-22-334455 invalid
+            splitDashWord[0].length < 2 || //1-22334455 invalid
+            splitDashWord[1].length < 1 // 1234556 invalid
+          ) {
+            return false;
+          }
+        }
+      },
+      message: (props) => `${props.value} is not a valid phone number!`,
+    },
+    required: true,
+  },
 });
 
 personSchema.set("toJSON", {
