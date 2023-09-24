@@ -150,17 +150,31 @@ const App = () => {
           number: newPhoneNumber,
         };
         // add new person name and phone number to json server
-        noteServices.create(newPerson).then((data) => {
-          setPersons(persons.concat(data));
-          //Show a message that a new user has added
-          setMessageType(false); //set the message to success message
-          setMessage(`Added ${newPerson.name}`);
-          setTimeout(() => {
-            setMessage(null);
-          }, 5000);
-          setNewName("");
-          setNewPhoneNumber("");
-        });
+        noteServices
+          .create(newPerson)
+          .then((data) => {
+            setPersons(persons.concat(data));
+            //Show a message that a new user has added
+            setMessageType(false); //set the message to success message
+            setMessage(`Added ${newPerson.name}`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+            setNewName("");
+            setNewPhoneNumber("");
+          })
+          // Show the reason why new person and phonenumber not created
+          .catch((response) => {
+            const errorMessage = `${response.response.data.error}`;
+            //Failed message that the person not added to phone book
+            setMessageType(true); //set the message to error message
+            setMessage(`${errorMessage}`);
+            setTimeout(() => {
+              setMessage(null);
+            }, 5000);
+            setNewName("");
+            setNewPhoneNumber("");
+          });
       }
     }
   };

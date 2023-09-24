@@ -100,14 +100,15 @@ app.put("/api/persons/:id", (request, response, next) => {
 
 // error handing middleware function
 const handleError = (error, request, response, next) => {
-  console.log("Error message", error.name);
+  console.log("Error name:", error.name);
+
   if (error.name === "CastError") {
     response.status(404).send({
       error: "malformatted id",
     });
   } else if (error.name === "ValidationError") {
     response.status(400).send({
-      error: error.message,
+      error: `${error.message}`,
     });
   }
   next(error);
