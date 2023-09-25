@@ -1,12 +1,12 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose');
 
-mongoose.set("strictQuery", false);
+mongoose.set('strictQuery', false);
 const url = process.env.MONGODB_URL;
 console.log(`Database url:${url}`);
 mongoose
   .connect(url)
-  .then((result) => console.log("Connected to Mongodb"))
-  .catch((error) => console.log("Error connection to Mongodb", error.message));
+  .then(() => console.log('Connected to Mongodb'))
+  .catch((error) => console.log('Error connection to Mongodb', error.message));
 
 const personSchema = mongoose.Schema({
   name: {
@@ -17,21 +17,21 @@ const personSchema = mongoose.Schema({
   number: {
     type: String,
     minLength: 8,
-    //phone number must be 123-123(min 3 digit before and after -) formate
+    //  phone number must be 123-123(min 3 digit before and after -) formate
     validate: {
-      validator: function (phoneNumber) {
-        if (!phoneNumber.includes("-")) {
-          return false;
-        } else if (phoneNumber.includes("-")) {
-          let splitDashWord = phoneNumber.split("-");
-          if (
-            splitDashWord.length > 2 || //10-22-334455 invalid
-            splitDashWord[0].length < 2 || //1-22334455 invalid
-            splitDashWord[1].length < 1 // 1234556 invalid
-          ) {
+      validator(phoneNumber) {
+        if (phoneNumber.includes('-')) {
+          const splitDashWord = phoneNumber.split('-');
+          //  10-22-334455 invalid || 1-22334455 invalid || 1234556 invalid
+          if (splitDashWord.length > 2
+            || splitDashWord[0].length < 2
+            || splitDashWord[1].length < 1) {
             return false;
           }
+        } else if (!phoneNumber.includes('-')) {
+          return false;
         }
+        return true;
       },
       message: (props) => `${props.value} is not a valid phone number!`,
     },
@@ -39,7 +39,7 @@ const personSchema = mongoose.Schema({
   },
 });
 
-personSchema.set("toJSON", {
+personSchema.set('toJSON', {
   transform: (document, returnObject) => {
     returnObject.id = returnObject._id;
     delete returnObject._id;
@@ -47,4 +47,4 @@ personSchema.set("toJSON", {
   },
 });
 
-module.exports = mongoose.model("Person", personSchema);
+module.exports = mongoose.model('Person', personSchema);
