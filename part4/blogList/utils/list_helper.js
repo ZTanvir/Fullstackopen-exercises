@@ -8,7 +8,20 @@ const totalLikes = (blogPostList) => {
   return blogPostList.length === 0 ? 0 : totalLikes;
 };
 
+const favoriteBlog = (blogList) => {
+  let favoriteBlog = null;
+  let mostLikes = 0;
+  blogList.forEach((blog) => {
+    if (blog.likes > mostLikes) {
+      mostLikes = blog.likes;
+      favoriteBlog = blog;
+    }
+  });
+  return favoriteBlog;
+};
+
 module.exports = {
   dummy,
   totalLikes,
+  favoriteBlog,
 };
