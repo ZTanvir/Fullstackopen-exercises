@@ -48,9 +48,41 @@ const mostBlogs = (blogList) => {
   return blogList.length === 0 ? null : authorBlogs;
 };
 
+const mostLikes = (blogList) => {
+  let authorList = [];
+  let mostLikedAuthor = {};
+  // store all the author from blog in author list
+  blogList.forEach((blog) => {
+    let author = blog.author;
+    if (!authorList.includes(author)) {
+      authorList = authorList.concat(author);
+    }
+  });
+  let likes = 0;
+  //loop the authorlist and find how many likes they got all of their blog post
+  authorList.forEach((blogWriter) => {
+    let writer = blogWriter;
+    let totalLikes = 0;
+    blogList.forEach((blog) => {
+      if (blog.author === writer) {
+        totalLikes += blog.likes;
+      }
+      if (totalLikes > likes) {
+        likes = totalLikes;
+        mostLikedAuthor = {
+          ...mostLikedAuthor,
+          author: writer,
+          likes: totalLikes,
+        };
+      }
+    });
+  });
+  return blogList.length === 0 ? null : mostLikedAuthor;
+};
 module.exports = {
   dummy,
   totalLikes,
   favoriteBlog,
   mostBlogs,
+  mostLikes,
 };
