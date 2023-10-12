@@ -63,7 +63,7 @@ describe("Most likes author test", () => {
 
   test("When there are no blog post yet", () => {
     const result = mostLikes([]);
-    console.log(result);
+
     expect(result).toBe(null);
   });
 });
