@@ -28,6 +28,22 @@ describe("Check get request return right ammount and right type data", () => {
   });
 });
 
+describe("Database default key name has been change", () => {
+  test("Unique identifier property of the blog posts is named id", async () => {
+    const response = await api.get("/api/blogs");
+    // check for the key named id
+    response.body.forEach((blog) => {
+      for (let item in blog) {
+        if (item.id === "id") {
+          let isId = item.id;
+          // check isId variable is not undefined
+          expect(isId).toBeDefined();
+        }
+      }
+    });
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
