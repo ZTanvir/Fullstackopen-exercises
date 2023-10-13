@@ -24,7 +24,7 @@ describe("Check get request return right ammount and right type data", () => {
   });
   test("All blog return", async () => {
     const response = await api.get("/api/blogs");
-    expect(response.body).toHaveLength(2);
+    expect(response.body).toHaveLength(helper.initialBlog.length);
   });
 });
 
@@ -41,6 +41,38 @@ describe("Database default key name has been change", () => {
         }
       }
     });
+  });
+});
+
+describe("Addition of new blog post", () => {
+  const newPost = {
+    title: "Js",
+    author: "Asad khan",
+    url: "www.google.com",
+    likes: 15,
+    id: "651bb985e98300e7e1ad723b",
+  };
+
+  test("Response with status code 201", async () => {
+    await api
+      .post("/api/blogs")
+      .send(newPost)
+      .expect(201)
+      .expect("Content-type", /application\/json/);
+  });
+
+  test("A new post has added", async () => {
+    await api.post("/api/blogs").send(newPost);
+    const blogs = await helper.notesInDb();
+    const initialTotalBlog = helper.initialBlog.length;
+    expect(blogs).toHaveLength(initialTotalBlog + 1);
+  });
+
+  test("Check new collection in db has title named Js", async () => {
+    await api.post("/api/blogs").send(newPost);
+    const blogs = await helper.notesInDb();
+    const postTitle = blogs.map((blog) => blog.title);
+    expect(postTitle).toContain("Js");
   });
 });
 
