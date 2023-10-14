@@ -111,6 +111,38 @@ describe("Addition of new blog post", () => {
   });
 });
 
+describe("Delete a single blog post", () => {
+  test("Get response 204 on delete", async () => {
+    const blogsPost = await helper.blogsInDb();
+    const postToDelete = blogsPost[0];
+    await api.delete(`/api/blogs/${postToDelete.id}`).expect(204);
+  });
+
+  test("A post has remove from database", async () => {
+    const blogsPost = await helper.blogsInDb();
+    const postToDelete = blogsPost[0];
+
+    await api.delete(`/api/blogs/${postToDelete.id}`);
+
+    const blogsPostAfterDelete = await helper.blogsInDb();
+
+    expect(blogsPostAfterDelete).toHaveLength(blogsPost.length - 1);
+  });
+
+  test("Check deleted blog post title is not present in db", async () => {
+    const blogsPost = await helper.blogsInDb();
+    const postToDelete = blogsPost[0];
+    const postTitle = postToDelete.title;
+
+    await api.delete(`/api/blogs/${postToDelete.id}`);
+
+    const blogsPostAfterDelete = await helper.blogsInDb();
+    const allPostTitle = blogsPostAfterDelete.map((post) => post.title);
+
+    expect(allPostTitle).not.toContain(postTitle);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
