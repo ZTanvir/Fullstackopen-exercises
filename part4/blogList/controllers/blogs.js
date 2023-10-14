@@ -9,7 +9,13 @@ blogRouter.get("/", async (request, response) => {
 });
 
 blogRouter.post("/", async (request, response) => {
-  const blog = new Blog(request.body);
+  const body = request.body;
+  // check likes property is available in the request body
+  if (!body.likes) {
+    body.likes = 0;
+  }
+
+  const blog = new Blog(body);
 
   try {
     const newNote = await blog.save();

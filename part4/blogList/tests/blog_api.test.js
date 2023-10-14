@@ -74,6 +74,23 @@ describe("Addition of new blog post", () => {
     const postTitle = blogs.map((blog) => blog.title);
     expect(postTitle).toContain("Js");
   });
+
+  test("Check for likes property is missing from blog post", async () => {
+    const testPost = {
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+    };
+    await api.post("/api/blogs").send(testPost);
+    const blogs = await helper.notesInDb();
+    const postWithoutLikes = blogs.filter(
+      (post) => post.title === testPost.title
+    );
+    // add likes and id test post
+    testPost.likes = 0;
+    testPost.id = postWithoutLike[0].id;
+    expect(postWithoutLikes).toContainEqual(testPost);
+  });
 });
 
 afterAll(() => {
