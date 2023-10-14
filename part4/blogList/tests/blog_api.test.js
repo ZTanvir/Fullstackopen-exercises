@@ -63,14 +63,14 @@ describe("Addition of new blog post", () => {
 
   test("A new post has added", async () => {
     await api.post("/api/blogs").send(newPost);
-    const blogs = await helper.notesInDb();
+    const blogs = await helper.blogsInDb();
     const initialTotalBlog = helper.initialBlog.length;
     expect(blogs).toHaveLength(initialTotalBlog + 1);
   });
 
   test("Check new collection in db has title named Js", async () => {
     await api.post("/api/blogs").send(newPost);
-    const blogs = await helper.notesInDb();
+    const blogs = await helper.blogsInDb();
     const postTitle = blogs.map((blog) => blog.title);
     expect(postTitle).toContain("Js");
   });
@@ -82,14 +82,32 @@ describe("Addition of new blog post", () => {
       url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     };
     await api.post("/api/blogs").send(testPost);
-    const blogs = await helper.notesInDb();
+    const blogs = await helper.blogsInDb();
     const postWithoutLikes = blogs.filter(
       (post) => post.title === testPost.title
     );
     // add likes and id test post
     testPost.likes = 0;
-    testPost.id = postWithoutLike[0].id;
+    testPost.id = postWithoutLikes[0].id;
     expect(postWithoutLikes).toContainEqual(testPost);
+  });
+
+  test("If url missing from new post get a response 400", async () => {
+    const testPost = {
+      title: "Canonical string reduction",
+      author: "Edsger W. Dijkstra",
+      likes: 0,
+    };
+    await api.post("/api/blogs").send(testPost).expect(400);
+  });
+
+  test("If title missing from new post get a response 400", async () => {
+    const testPost = {
+      url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
+      author: "Edsger W. Dijkstra",
+      likes: 0,
+    };
+    await api.post("/api/blogs").send(testPost).expect(400);
   });
 });
 
