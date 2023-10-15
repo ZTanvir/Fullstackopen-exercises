@@ -143,6 +143,34 @@ describe("Delete a single blog post", () => {
   });
 });
 
+describe("Update blog post likes", () => {
+  test("Response 201 when a blog post is updated ", async () => {
+    const initialBlog = await helper.blogsInDb();
+    const blogPost = initialBlog[0];
+    const updatePostData = { likes: 10 };
+
+    await api
+      .put(`/api/blogs/${blogPost.id}`)
+      .send(updatePostData)
+      .expect(201)
+      .expect("Content-type", /application\/json/);
+  });
+
+  test("Blog post likes updated", async () => {
+    const initialBlog = await helper.blogsInDb();
+    const blogPost = initialBlog[0];
+    const blogPostAuthor = blogPost.author;
+    const updatePostData = { likes: 10 };
+
+    await api.put(`/api/blogs/${blogPost.id}`).send(updatePostData);
+    const updatedBlog = await helper.blogsInDb();
+    const filterBlog = updatedBlog.filter(
+      (blog) => blog.author === blogPostAuthor
+    );
+    expect(filterBlog[0].likes).toBe(updatePostData.likes);
+  });
+});
+
 afterAll(() => {
   mongoose.connection.close();
 });
