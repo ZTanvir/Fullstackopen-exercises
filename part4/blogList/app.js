@@ -10,6 +10,7 @@ const config = require("./utils/config");
 const errorHandler = require("./utils/middleware");
 const blogRouter = require("./controllers/blogs");
 const userRouter = require("./controllers/users");
+const loginRouter = require("./controllers/login");
 const mongoUrl = config.MONGO_URL;
 
 mongoose
@@ -23,6 +24,7 @@ mongoose
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
+app.use("/api/login", loginRouter);
 
 app.use(errorHandler);
 
