@@ -7,13 +7,23 @@ app.use(express.json());
 const mongoose = require("mongoose");
 
 const config = require("./utils/config");
+const errorHandler = require("./utils/middleware");
 const blogRouter = require("./controllers/blogs");
 const userRouter = require("./controllers/users");
 const mongoUrl = config.MONGO_URL;
 
-mongoose.connect(mongoUrl);
+mongoose
+  .connect(mongoUrl)
+  .then((result) => {
+    console.log("Connected to Mongodb successfully");
+  })
+  .catch((error) => {
+    console.log("Error while connected to mongodb:", error);
+  });
 
 app.use("/api/blogs", blogRouter);
 app.use("/api/users", userRouter);
+
+app.use(errorHandler);
 
 module.exports = app;

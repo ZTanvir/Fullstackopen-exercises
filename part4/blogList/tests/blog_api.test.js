@@ -2,6 +2,8 @@ const mongoose = require("mongoose");
 const helper = require("./blog_test_helper");
 const app = require("../app");
 const Blog = require("../models/blog");
+const User = require("../models/user");
+const bcrypt = require("bcrypt");
 const supertest = require("supertest");
 const api = supertest(app);
 
@@ -168,6 +170,128 @@ describe("Update blog post likes", () => {
       (blog) => blog.author === blogPostAuthor
     );
     expect(filterBlog[0].likes).toBe(updatePostData.likes);
+  });
+});
+
+describe("Check invalid users are not created", () => {
+  beforeEach(async () => {
+    await User.deleteMany({});
+    const passwordHash = await bcrypt.hash("secret", 10);
+    const user = new User({
+      username: "Arto",
+      name: "arto helal",
+      passwordHash,
+    });
+    await user.save();
+  });
+
+  test("Username must be unique", async () => {
+    const usersAtStart = await helper.usersInDb();
+    const newUser = {
+      username: "Arto",
+      name: "arto helal",
+      password: "arto12345",
+    };
+    api
+      .post("/api/users")
+      .send(newUser)
+      .expect(401)
+      .expect("Content-type", /application\/json/);
+
+    // new user has not added to database
+    const usersAtEnd = await helper.usersInDb();
+    expect(usersAtEnd).toHaveLength(usersAtStart.length);
+  });
+
+  describe("Check for correct username and password", () => {
+    test("User can't be created without giving username", async () => {
+      const testUser = {
+        name: "asad khan",
+        password: "asad12345",
+      };
+      const usersAtStart = await helper.usersInDb();
+      const result = await api
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .expect("Content-type", /application\/json/);
+
+      // new user has not added to database
+      const usersAtEnd = await helper.usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length);
+
+      // contain proper error message
+      expect(result.body.error).toContain(
+        "User validation failed: username: Path `username` is required."
+      );
+    });
+
+    test("User can't be created without giving password", async () => {
+      const testUser = {
+        username: "asadkhan",
+        name: "asad khan",
+        password: "",
+      };
+      const usersAtStart = await helper.usersInDb();
+      const result = await api
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .expect("Content-type", /application\/json/);
+
+      // new user has not added to database
+      const usersAtEnd = await helper.usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length);
+
+      // contain proper error message
+      expect(result.body.error).toContain("Password is required");
+    });
+
+    test("User can't be created when username is less than 3 character", async () => {
+      const testUser = {
+        username: "as",
+        name: "asad khan",
+        password: "asad",
+      };
+      const usersAtStart = await helper.usersInDb();
+      const result = await api
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .expect("Content-type", /application\/json/);
+
+      // new user has not added to database
+      const usersAtEnd = await helper.usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length);
+
+      // contain proper error message
+      expect(result.body.error).toContain(
+        "User validation failed: username: Path `username` (`as`) is shorter than the minimum allowed length (3)."
+      );
+    });
+
+    test("User can't be created when password is less than 3 character", async () => {
+      const testUser = {
+        username: "asad",
+        name: "asad khan",
+        password: "ab",
+      };
+      const usersAtStart = await helper.usersInDb();
+      const result = await api
+        .post("/api/users")
+        .send(testUser)
+        .expect(400)
+        .expect("Content-type", /application\/json/);
+
+      // new user has not added to database
+      const usersAtEnd = await helper.usersInDb();
+      expect(usersAtEnd).toHaveLength(usersAtStart.length);
+
+      // contain proper error message
+      expect(result.body.error).toContain(
+        "Password must be atleast 3 character long"
+      );
+    });
   });
 });
 
