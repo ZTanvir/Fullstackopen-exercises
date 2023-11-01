@@ -10,7 +10,6 @@ loginRouter.post("/", async (request, response) => {
   const user = await User.findOne({ username });
   const isPasswordValid =
     user === null ? false : bcrypt.compareSync(password, user.passwordHash);
-  console.log(user, isPasswordValid);
   //   if username or password invalid response appropriate message
   if (!(user && isPasswordValid)) {
     return response
