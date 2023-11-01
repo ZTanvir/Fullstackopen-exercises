@@ -1,7 +1,6 @@
 const Blog = require("../models/blog");
 const User = require("../models/user");
 const blogRouter = require("express").Router();
-const jwt = require("jsonwebtoken");
 
 blogRouter.get("/", async (request, response) => {
   try {
@@ -24,14 +23,7 @@ blogRouter.post("/", async (request, response) => {
   if (!body.title || !body.url) {
     return response.status(400).end();
   }
-  // verify the user token
-  const bearerToken = request.token;
-  const decodeToken = jwt.verify(bearerToken, process.env.SECRET);
-  if (!decodeToken.id) {
-    return response.status(401).response({ error: "token invalid" });
-  }
-
-  const user = await User.findById(decodeToken.id);
+  const user = await User.findById(request.user);
 
   const blog = new Blog({
     title: body.title,
@@ -54,17 +46,16 @@ blogRouter.post("/", async (request, response) => {
 blogRouter.delete("/:id", async (request, response) => {
   const id = request.params.id;
 
-  let decodeToken = jwt.verify(request.token, process.env.SECRET);
-  const user = await User.findById(decodeToken.id);
-  if (!(user && decodeToken)) {
+  const user = await User.findById(request.user);
+  if (!user) {
     return response.status(401).json({ error: "User or token invalid" });
   }
   const blog = await Blog.findById(id);
 
   try {
     /* 
-      Only blog delete possible if the user who created the blog 
-      and the user who want to delete the blog are same
+      delete a blog only possible if the user who created the blog 
+      and the user who want to delete the blog are the same user
      */
     if (user._id.toString() === blog.user.toString()) {
       await Blog.findByIdAndRemove(id);
