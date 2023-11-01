@@ -5,6 +5,7 @@ const jwt = require("jsonwebtoken");
 
 blogRouter.get("/", async (request, response) => {
   try {
+    console.log(request.token);
     const blogs = await Blog.find({}).populate("user", {
       username: 1,
       name: 1,
@@ -52,9 +53,23 @@ blogRouter.post("/", async (request, response) => {
 
 blogRouter.delete("/:id", async (request, response) => {
   const id = request.params.id;
+
+  let decodeToken = jwt.verify(request.token, process.env.SECRET);
+  const user = await User.findById(decodeToken.id);
+  if (!(user && decodeToken)) {
+    return response.status(401).json({ error: "User or token invalid" });
+  }
+  const blog = await Blog.findById(id);
+
   try {
-    await Blog.findByIdAndRemove(id);
-    response.status(204).end();
+    /* 
+      Only blog delete possible if the user who created the blog 
+      and the user who want to delete the blog are same
+     */
+    if (user._id.toString() === blog.user.toString()) {
+      await Blog.findByIdAndRemove(id);
+      response.status(204).end();
+    }
   } catch (error) {}
 });
 
