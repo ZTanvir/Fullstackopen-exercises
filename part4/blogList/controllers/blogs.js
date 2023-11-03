@@ -25,22 +25,26 @@ blogRouter.post("/", async (request, response) => {
   }
   const user = await User.findById(request.user);
 
-  const blog = new Blog({
-    title: body.title,
-    author: body.author,
-    url: body.url,
-    likes: body.likes,
-    user: user._id,
-  });
+  if (user) {
+    const blog = new Blog({
+      title: body.title,
+      author: body.author,
+      url: body.url,
+      likes: body.likes,
+      user: user._id,
+    });
 
-  // add the blog id to blogs array in User model
-  user.blogs = user.blogs.concat(blog._id);
-  await user.save();
+    // add the blog id to blogs array in User model
+    user.blogs = user.blogs.concat(blog._id);
+    await user.save();
 
-  try {
-    const newNote = await blog.save();
-    response.status(201).json(newNote);
-  } catch (error) {}
+    try {
+      const newNote = await blog.save();
+      response.status(201).json(newNote);
+    } catch (error) {}
+  } else {
+    response.status(401).json({ error: "username not found" });
+  }
 });
 
 blogRouter.delete("/:id", async (request, response) => {

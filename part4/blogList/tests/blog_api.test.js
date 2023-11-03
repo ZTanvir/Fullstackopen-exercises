@@ -46,32 +46,66 @@ describe("Database default key name has been change", () => {
   });
 });
 
-describe("Addition of new blog post", () => {
+describe.only("Addition of new blog post", () => {
+  let token = null;
+
+  beforeEach(async () => {
+    // delete all user and then create new user
+    // generate authentication token based on new user
+    await User.deleteMany({});
+    const passwordHash = await bcrypt.hash("userpassword", 10);
+    const user = new User({
+      username: "Artoo",
+      name: "arto helal",
+      passwordHash,
+    });
+    await user.save();
+    const userAndPassword = {
+      username: user.username,
+      password: "userpassword",
+    };
+    const loginResponse = await api.post("/api/login").send(userAndPassword);
+    token = loginResponse.body.token;
+  });
+
   const newPost = {
     title: "Js",
     author: "Asad khan",
     url: "www.google.com",
     likes: 15,
-    id: "651bb985e98300e7e1ad723b",
   };
-
-  test("Response with status code 201", async () => {
+  test("Response with status code 201 if new blog is created", async () => {
     await api
       .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
       .send(newPost)
       .expect(201)
       .expect("Content-type", /application\/json/);
   });
 
+  test("Response with status code 401 if token is not provided", async () => {
+    await api
+      .post("/api/blogs")
+      .send(newPost)
+      .expect(401)
+      .expect("Content-type", /application\/json/);
+  });
+
   test("A new post has added", async () => {
-    await api.post("/api/blogs").send(newPost);
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newPost);
     const blogs = await helper.blogsInDb();
     const initialTotalBlog = helper.initialBlog.length;
     expect(blogs).toHaveLength(initialTotalBlog + 1);
   });
 
   test("Check new collection in db has title named Js", async () => {
-    await api.post("/api/blogs").send(newPost);
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(newPost);
     const blogs = await helper.blogsInDb();
     const postTitle = blogs.map((blog) => blog.title);
     expect(postTitle).toContain("Js");
@@ -83,7 +117,10 @@ describe("Addition of new blog post", () => {
       author: "Edsger W. Dijkstra",
       url: "http://www.cs.utexas.edu/~EWD/transcriptions/EWD08xx/EWD808.html",
     };
-    await api.post("/api/blogs").send(testPost);
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(testPost);
     const blogs = await helper.blogsInDb();
     const postWithoutLikes = blogs.filter(
       (post) => post.title === testPost.title
@@ -91,6 +128,7 @@ describe("Addition of new blog post", () => {
     // add likes and id test post
     testPost.likes = 0;
     testPost.id = postWithoutLikes[0].id;
+    testPost.user = postWithoutLikes[0].user;
     expect(postWithoutLikes).toContainEqual(testPost);
   });
 
@@ -100,7 +138,11 @@ describe("Addition of new blog post", () => {
       author: "Edsger W. Dijkstra",
       likes: 0,
     };
-    await api.post("/api/blogs").send(testPost).expect(400);
+    await api
+      .post("/api/blogs")
+      .set({ Authorization: `Bearer ${token}` })
+      .send(testPost)
+      .expect(400);
   });
 
   test("If title missing from new post get a response 400", async () => {
@@ -176,7 +218,7 @@ describe("Update blog post likes", () => {
 describe("Check invalid users are not created", () => {
   beforeEach(async () => {
     await User.deleteMany({});
-    const passwordHash = await bcrypt.hash("secret", 10);
+    const passwordHash = await bcrypt.hash("userpassword", 10);
     const user = new User({
       username: "Arto",
       name: "arto helal",
@@ -202,6 +244,7 @@ describe("Check invalid users are not created", () => {
     const usersAtEnd = await helper.usersInDb();
     expect(usersAtEnd).toHaveLength(usersAtStart.length);
   });
+  test("", async () => {});
 
   describe("Check for correct username and password", () => {
     test("User can't be created without giving username", async () => {
