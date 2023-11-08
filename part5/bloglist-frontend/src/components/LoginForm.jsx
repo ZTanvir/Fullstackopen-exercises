@@ -7,13 +7,21 @@ const LoginForm = ({ getLoginData }) => {
 
   const handleLogin = async (event) => {
     event.preventDefault();
-    const loginData = await loginService.login({
-      username: userName,
-      password: passWord,
-    });
-    getLoginData(userName, passWord, loginData);
-    setUsername("");
-    setPassword("");
+    let userData = null;
+    let errorData = null;
+    try {
+      const loginData = await loginService.login({
+        username: userName,
+        password: passWord,
+      });
+      userData = loginData;
+      getLoginData(userData, errorData);
+      setUsername("");
+      setPassword("");
+    } catch (error) {
+      errorData = error;
+      getLoginData(userData, errorData);
+    }
   };
 
   return (
