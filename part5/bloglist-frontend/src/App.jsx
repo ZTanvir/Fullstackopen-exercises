@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
+import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
 
 const App = () => {
@@ -19,7 +20,7 @@ const App = () => {
     SetUser(userData);
   }, []);
 
-  const getLoginDetails = (loginData, error) => {
+  const getLoginDetails = (loginData, loginError) => {
     SetUser(loginData);
     // save user details to local storage
     if (loginData && !window.localStorage.getItem("blogAppLoginUser")) {
@@ -32,6 +33,12 @@ const App = () => {
   const handleLogout = () => {
     window.localStorage.removeItem("blogAppLoginUser");
     SetUser(null);
+  };
+
+  const getNewBlogData = (newBlog, newBlogError) => {
+    if (newBlog) {
+      setBlogs(blogs.concat(newBlog));
+    }
   };
 
   if (user === null) {
@@ -52,6 +59,7 @@ const App = () => {
           logout
         </button>
       </p>
+      <BlogForm userData={user} blogData={getNewBlogData} />
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
