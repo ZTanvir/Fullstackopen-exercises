@@ -3,10 +3,13 @@ import Blog from "./components/Blog";
 import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
+import Notification from "./components/Notification";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
   const [user, SetUser] = useState(null);
+  const [notice, setNotice] = useState("");
+  const [isNoticeError, setIsNoticeError] = useState("");
 
   useEffect(() => {
     blogService.getAll().then((blogs) => setBlogs(blogs));
@@ -21,11 +24,21 @@ const App = () => {
   }, []);
 
   const getLoginDetails = (loginData, loginError) => {
-    SetUser(loginData);
-    // save user details to local storage
-    if (loginData && !window.localStorage.getItem("blogAppLoginUser")) {
-      const stringifyUser = JSON.stringify(loginData);
-      window.localStorage.setItem("blogAppLoginUser", stringifyUser);
+    if (loginData) {
+      SetUser(loginData);
+      // save user details to local storage
+      if (loginData && !window.localStorage.getItem("blogAppLoginUser")) {
+        const stringifyUser = JSON.stringify(loginData);
+        window.localStorage.setItem("blogAppLoginUser", stringifyUser);
+      }
+    } else if (loginError) {
+      //send error msg to user if login failed
+      setNotice(loginError.response.data.error);
+      setIsNoticeError(true);
+      setTimeout(() => {
+        setNotice("");
+        setIsNoticeError("");
+      }, 5000);
     }
   };
 
@@ -38,13 +51,23 @@ const App = () => {
   const getNewBlogData = (newBlog, newBlogError) => {
     if (newBlog) {
       setBlogs(blogs.concat(newBlog));
+      setNotice(`a new blog ${newBlog.title} by ${newBlog.author} added`);
+      setIsNoticeError(false);
+      setTimeout(() => {
+        setNotice("");
+        setIsNoticeError("");
+      }, 5000);
     }
   };
+  // Show a error message if new blog is not added
 
   if (user === null) {
     return (
       <div>
         <h2>log in to application</h2>
+        {notice && (
+          <Notification notice={notice} isErrorNotice={isNoticeError} />
+        )}
         <LoginForm getLoginData={getLoginDetails} />
       </div>
     );
@@ -53,6 +76,7 @@ const App = () => {
   return (
     <div>
       <h2>blogs</h2>
+      {notice && <Notification notice={notice} isErrorNotice={isNoticeError} />}
       <p>
         {user.username} logged in{" "}
         <button type="button" onClick={handleLogout}>
@@ -66,5 +90,4 @@ const App = () => {
     </div>
   );
 };
-
 export default App;

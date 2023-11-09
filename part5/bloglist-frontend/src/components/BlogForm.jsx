@@ -19,7 +19,7 @@ const BlogForm = ({ userData, blogData }) => {
       setAuthor("");
       setUrl("");
     } catch (error) {
-      newBlogError = error.response.data;
+      newBlogError = error;
       blogData(newBlog, newBlogError);
     }
   };
