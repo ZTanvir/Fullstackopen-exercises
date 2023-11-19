@@ -4,7 +4,6 @@ const blogRouter = require("express").Router();
 
 blogRouter.get("/", async (request, response) => {
   try {
-    console.log(request.token);
     const blogs = await Blog.find({}).populate("user", {
       username: 1,
       name: 1,

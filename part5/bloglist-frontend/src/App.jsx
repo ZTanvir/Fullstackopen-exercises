@@ -4,6 +4,7 @@ import LoginForm from "./components/LoginForm";
 import BlogForm from "./components/BlogForm";
 import blogService from "./services/blogs";
 import Notification from "./components/Notification";
+import Toggleable from "./components/Toggleable";
 
 const App = () => {
   const [blogs, setBlogs] = useState([]);
@@ -83,7 +84,9 @@ const App = () => {
           logout
         </button>
       </p>
-      <BlogForm userData={user} blogData={getNewBlogData} />
+      <Toggleable label="new note">
+        <BlogForm userData={user} blogData={getNewBlogData} />
+      </Toggleable>
       {blogs.map((blog) => (
         <Blog key={blog.id} blog={blog} />
       ))}
