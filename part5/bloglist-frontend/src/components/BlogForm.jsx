@@ -2,6 +2,7 @@ import { useState } from "react";
 import blogService from "../services/blogs";
 
 const BlogForm = ({ userData, blogData }) => {
+  // create new blog post based on data
   const [title, setTitle] = useState("");
   const [author, setAuthor] = useState("");
   const [url, setUrl] = useState("");
