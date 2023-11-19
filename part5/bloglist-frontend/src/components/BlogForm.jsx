@@ -14,7 +14,8 @@ const BlogForm = ({ userData, blogData }) => {
     let newBlogError = null;
     try {
       const data = await blogService.create({ title, author, url });
-      newBlog = data;
+      // add new blog data and user info to the new blog
+      newBlog = { ...data, user: { ...userData, id: data.id } };
       blogData(newBlog, newBlogError);
       setTitle("");
       setAuthor("");
