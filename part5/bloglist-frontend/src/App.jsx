@@ -84,7 +84,7 @@ const App = () => {
           logout
         </button>
       </p>
-      <Toggleable label="new note">
+      <Toggleable label="create new blog">
         <BlogForm userData={user} blogData={getNewBlogData} />
       </Toggleable>
       {blogs.map((blog) => (
