@@ -61,8 +61,8 @@ blogRouter.delete("/:id", async (request, response) => {
       and the user who want to delete the blog are the same user
      */
     if (user._id.toString() === blog.user.toString()) {
-      await Blog.findByIdAndRemove(id);
-      response.status(204).end();
+      const deletedBlog = await Blog.findByIdAndRemove(id);
+      response.status(200).json(deletedBlog);
     }
   } catch (error) {}
 });

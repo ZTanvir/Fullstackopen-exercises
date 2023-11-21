@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog }) => {
+const Blog = ({ blog, blogs, setBlogs }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [blogLikes, setBlogLikes] = useState(blog.likes);
   let label = showDetails ? "hide" : "view";
@@ -14,10 +14,16 @@ const Blog = ({ blog }) => {
   const handleBlogDetails = () => {
     setShowDetails(!showDetails);
   };
-  const handleBlogLikes = async () => {
-    // send like data to server
+
+  // get user info along with token from localstorage
+  const tokenExtactor = () => {
     const user = JSON.parse(window.localStorage.getItem("blogAppLoginUser"));
-    blogService.setToken(user.token);
+    return user;
+  };
+
+  const handleBlogLikes = async () => {
+    const userToken = tokenExtactor().token;
+    blogService.setToken(userToken);
     const blogId = blog.id;
     const blogData = {
       likes: blogLikes + 1,
@@ -26,8 +32,25 @@ const Blog = ({ blog }) => {
       url: blog.url,
     };
     try {
+      // send like data to server
       const updatedBlog = await blogService.updateBlog(blogId, blogData);
       setBlogLikes(blogLikes + 1);
+    } catch (error) {}
+  };
+
+  const handleRemoveBlog = async () => {
+    const blogId = blog.id;
+    const userToken = tokenExtactor().token;
+    try {
+      if (window.confirm(`Remove blog ${blog.title} by ${blog.author}`)) {
+        blogService.setToken(userToken);
+        const deletedBlog = await blogService.deleteBlog(blogId);
+        let copyBlogs = [...blogs];
+        copyBlogs = copyBlogs.filter(
+          (copyBlog) => copyBlog.id !== deletedBlog.id
+        );
+        setBlogs(copyBlogs);
+      }
     } catch (error) {}
   };
 
@@ -46,6 +69,9 @@ const Blog = ({ blog }) => {
             likes {blogLikes} <button onClick={handleBlogLikes}>like</button>
           </div>
           <div>{blog.user.name}</div>
+          <div>
+            <button onClick={handleRemoveBlog}>remove</button>
+          </div>
         </div>
       )}
     </div>

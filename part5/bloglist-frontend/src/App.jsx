@@ -92,7 +92,7 @@ const App = () => {
         <BlogForm userData={user} blogData={getNewBlogData} />
       </Toggleable>
       {sortBlogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} setBlog={setBlogs} />
+        <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
       ))}
     </div>
   );
