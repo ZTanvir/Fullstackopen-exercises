@@ -88,7 +88,7 @@ const App = () => {
         <BlogForm userData={user} blogData={getNewBlogData} />
       </Toggleable>
       {blogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} setBlog={setBlogs} />
       ))}
     </div>
   );

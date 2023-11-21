@@ -1,7 +1,9 @@
 import { useState } from "react";
+import blogService from "../services/blogs";
 
 const Blog = ({ blog }) => {
   const [showDetails, setShowDetails] = useState(false);
+  const [blogLikes, setBlogLikes] = useState(blog.likes);
   let label = showDetails ? "hide" : "view";
 
   const blogStyle = {
@@ -12,6 +14,23 @@ const Blog = ({ blog }) => {
   const handleBlogDetails = () => {
     setShowDetails(!showDetails);
   };
+  const handleBlogLikes = async () => {
+    // send like data to server
+    const user = JSON.parse(window.localStorage.getItem("blogAppLoginUser"));
+    blogService.setToken(user.token);
+    const blogId = blog.id;
+    const blogData = {
+      likes: blogLikes + 1,
+      author: blog.author,
+      title: blog.title,
+      url: blog.url,
+    };
+    try {
+      const updatedBlog = await blogService.updateBlog(blogId, blogData);
+      setBlogLikes(blogLikes + 1);
+    } catch (error) {}
+  };
+
   return (
     <div style={blogStyle}>
       <div onClick={handleBlogDetails}>
@@ -20,9 +39,11 @@ const Blog = ({ blog }) => {
       {/* display addtional blog information based on user action */}
       {showDetails && (
         <div>
-          <div>{blog.url}</div>
           <div>
-            likes {blog.likes} <button>like</button>
+            <a href="blog.url">{blog.url}</a>
+          </div>
+          <div>
+            likes {blogLikes} <button onClick={handleBlogLikes}>like</button>
           </div>
           <div>{blog.user.name}</div>
         </div>

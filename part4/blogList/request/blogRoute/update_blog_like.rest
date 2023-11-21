@@ -1,0 +1,11 @@
+PUT http://localhost:3001/api/blogs/655af9d14d166b4cad970352
+Content-Type: application/json
+Authorization: Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6IkhlbGxhcyIsImlkIjoiNjU0MGVkYjJmMzg2NTRhMzgyZGE2MmFhIiwiaWF0IjoxNzAwNTQxMzI4fQ.FFY9mIFAPNDGWDZzskaQppMEONzreNpzSZQI8hIdMIk
+
+{
+  "user": "6540edb2f38654a382da62aa",
+  "likes": 10,
+  "author": "react.dev",
+  "title": "Thinking in React",
+  "url": "https://react.dev/learn/thinking-in-react"
+}

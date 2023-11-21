@@ -72,14 +72,29 @@ blogRouter.put("/:id", async (request, response) => {
   const body = request.body;
 
   if (!body.likes) {
-    return response.status(400).end();
+    return response.status(400).json({ error: "likes not found" });
   }
 
+  const user = await User.findById(request.user);
+  if (!user) {
+    return response.status(401).json({ error: "User or token invalid" });
+  }
+  const blog = await Blog.findById(id);
+
   try {
+    /* 
+    update a blog only possible if the user who created the blog and
+    the user who want to update the blog are the same person
+  */
+    if (user._id.toString() !== blog.user.toString()) {
+      response.status(400).json({
+        error: "Can't update, this blog is created by different user",
+      });
+    }
     const updateBlogPost = await Blog.findByIdAndUpdate(id, body, {
       new: true,
     });
-    response.status(201).json(updateBlogPost);
+    response.status(200).json(updateBlogPost);
   } catch (error) {}
 });
 
