@@ -60,6 +60,10 @@ const App = () => {
       }, 5000);
     }
   };
+  // sort blog based on likes
+  let sortBlogs = [...blogs];
+  sortBlogs.sort((a, b) => b.likes - a.likes);
+
   // Show a error message if new blog is not added
 
   if (user === null) {
@@ -87,7 +91,7 @@ const App = () => {
       <Toggleable label="create new blog">
         <BlogForm userData={user} blogData={getNewBlogData} />
       </Toggleable>
-      {blogs.map((blog) => (
+      {sortBlogs.map((blog) => (
         <Blog key={blog.id} blog={blog} setBlog={setBlogs} />
       ))}
     </div>
