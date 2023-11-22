@@ -88,9 +88,7 @@ const App = () => {
           logout
         </button>
       </p>
-      <Toggleable label="create new blog">
-        <BlogForm userData={user} blogData={getNewBlogData} />
-      </Toggleable>
+      <Toggleable label="create new blog"></Toggleable>
       {sortBlogs.map((blog) => (
         <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
       ))}

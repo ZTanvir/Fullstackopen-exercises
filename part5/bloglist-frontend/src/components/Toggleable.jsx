@@ -1,4 +1,5 @@
 import { useState } from "react";
+import PropTypes from "prop-types";
 
 const Toggleable = ({ label, children }) => {
   const [showElement, setShowElement] = useState(false);
@@ -21,4 +22,10 @@ const Toggleable = ({ label, children }) => {
     </section>
   );
 };
+
+Toggleable.propTypes = {
+  label: PropTypes.string.isRequired,
+  children: PropTypes.element.isRequired,
+};
+
 export default Toggleable;

@@ -35,7 +35,9 @@ const Blog = ({ blog, blogs, setBlogs }) => {
       // send like data to server
       const updatedBlog = await blogService.updateBlog(blogId, blogData);
       setBlogLikes(blogLikes + 1);
-    } catch (error) {}
+    } catch (error) {
+      console.log("Blog post like error:", error.message);
+    }
   };
 
   const handleRemoveBlog = async () => {
@@ -51,7 +53,9 @@ const Blog = ({ blog, blogs, setBlogs }) => {
         );
         setBlogs(copyBlogs);
       }
-    } catch (error) {}
+    } catch (error) {
+      console.log("Remove post like error:", error.message);
+    }
   };
 
   return (
