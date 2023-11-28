@@ -60,9 +60,10 @@ const Blog = ({ blog, blogs, setBlogs }) => {
 
   return (
     <div className="blog" style={blogStyle}>
-      <div onClick={handleBlogDetails}>
-        {blog.title} {blog.author} <button>{label}</button>
-      </div>
+      <label>
+        {blog.title} {blog.author}
+        <button onClick={handleBlogDetails}>{label}</button>
+      </label>
       {/* display addtional blog information based on user action */}
       {showDetails && (
         <div className="blog-details">
