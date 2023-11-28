@@ -59,13 +59,13 @@ const Blog = ({ blog, blogs, setBlogs }) => {
   };
 
   return (
-    <div style={blogStyle}>
+    <div className="blog" style={blogStyle}>
       <div onClick={handleBlogDetails}>
         {blog.title} {blog.author} <button>{label}</button>
       </div>
       {/* display addtional blog information based on user action */}
       {showDetails && (
-        <div>
+        <div className="blog-details">
           <div>
             <a href="blog.url">{blog.url}</a>
           </div>
