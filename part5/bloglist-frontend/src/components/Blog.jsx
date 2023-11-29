@@ -4,7 +4,7 @@ import blogService from "../services/blogs";
 const Blog = ({ blog, blogs, setBlogs }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [blogLikes, setBlogLikes] = useState(blog.likes);
-  let label = showDetails ? "hide" : "view";
+  let label = showDetails ? "hide details" : "view details";
 
   const blogStyle = {
     border: "1px solid black",
