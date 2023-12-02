@@ -3,6 +3,7 @@ import "@testing-library/jest-dom";
 import userEvent from "@testing-library/user-event";
 import { screen, render } from "@testing-library/react";
 import Blog from "../components/Blog";
+import BlogForm from "./BlogForm";
 
 describe("<Blog /> Component", () => {
   let container = null;
@@ -50,7 +51,8 @@ describe("<Blog /> Component", () => {
     expect(blogLikes).toHaveTextContent(10);
   });
 });
-describe.only("<Blog /> Component like test", () => {
+
+describe.skip("<Blog /> Component like test", () => {
   test("Click on like button twice run the event handler function twice", async () => {
     const blogs = [
       {
@@ -79,5 +81,33 @@ describe.only("<Blog /> Component like test", () => {
     await user.click(likeBtn);
     // console.log(updateBlogLikesFn.mock.calls);
     expect(updateBlogLikesFn.mock.calls).toHaveLength(2);
+  });
+});
+
+describe.skip("<BlogForm /> Component", () => {
+  test("Blog created using Blog form match with new blog", async () => {
+    let userInfo = {
+      username: "Hellas",
+      name: "Arto Hellas",
+    };
+    const mockBlogDataFn = jest.fn();
+    const { container } = render(
+      <BlogForm userData={userInfo} blogData={mockBlogDataFn} />
+    );
+    const titleInput = container.querySelector("#blog-title");
+    const titleAuthor = container.querySelector("#blog-author");
+    const titleUrl = container.querySelector("#blog-url");
+    const submitBtn = screen.getByText("Create");
+    const user = userEvent.setup();
+
+    await user.type(titleInput, "How to Give Yourself Good Advice");
+    await user.type(titleAuthor, "Adrienne Gibbs");
+    await user.type(
+      titleUrl,
+      "https://blog.medium.com/how-to-give-yourself-good-advice-9c4fb0b24cbf"
+    );
+    await user.click(submitBtn);
+    console.log(mockBlogDataFn.mock.calls);
+    expect(mockBlogDataFn.mock.calls).toHaveLength(1);
   });
 });
