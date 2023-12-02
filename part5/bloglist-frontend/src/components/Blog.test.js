@@ -50,3 +50,34 @@ describe("<Blog /> Component", () => {
     expect(blogLikes).toHaveTextContent(10);
   });
 });
+describe.only("<Blog /> Component like test", () => {
+  test("Click on like button twice run the event handler function twice", async () => {
+    const blogs = [
+      {
+        title: "Python for everyone",
+        author: "Marco reus",
+        url: "https://cbea.ms/git-commit/",
+        user: {
+          username: "Hellas",
+          name: "Arto Hellas",
+
+          id: "6540edb2f38654a382da62aa",
+        },
+        likes: 10,
+        id: "654c71272ea1204676d2ff39",
+      },
+    ];
+    const updateBlogLikesFn = jest.fn();
+    const user = userEvent.setup();
+
+    render(
+      <Blog blog={blogs[0]} blogs={blogs} updateBlogLikes={updateBlogLikesFn} />
+    );
+    const button = screen.getByText("view details");
+    await user.click(button);
+    const likeBtn = screen.getByText("like");
+    await user.click(likeBtn);
+    // console.log(updateBlogLikesFn.mock.calls);
+    expect(updateBlogLikesFn.mock.calls).toHaveLength(2);
+  });
+});

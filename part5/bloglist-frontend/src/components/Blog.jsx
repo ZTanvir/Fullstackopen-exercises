@@ -1,7 +1,7 @@
 import { useState } from "react";
 import blogService from "../services/blogs";
 
-const Blog = ({ blog, blogs, setBlogs }) => {
+const Blog = ({ blog, blogs, setBlogs, updateBlogLikes }) => {
   const [showDetails, setShowDetails] = useState(false);
   const [blogLikes, setBlogLikes] = useState(blog.likes);
   let label = showDetails ? "hide details" : "view details";
@@ -22,8 +22,8 @@ const Blog = ({ blog, blogs, setBlogs }) => {
   };
 
   const handleBlogLikes = async () => {
-    const userToken = tokenExtactor().token;
-    blogService.setToken(userToken);
+    const user = tokenExtactor();
+    const userToken = user.token;
     const blogId = blog.id;
     const blogData = {
       likes: blogLikes + 1,
@@ -31,13 +31,7 @@ const Blog = ({ blog, blogs, setBlogs }) => {
       title: blog.title,
       url: blog.url,
     };
-    try {
-      // send like data to server
-      const updatedBlog = await blogService.updateBlog(blogId, blogData);
-      setBlogLikes(blogLikes + 1);
-    } catch (error) {
-      console.log("Blog post like error:", error.message);
-    }
+    updateBlogLikes(userToken, blogId, blogData, blogLikes, setBlogLikes);
   };
 
   const handleRemoveBlog = async () => {

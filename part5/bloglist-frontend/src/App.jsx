@@ -43,6 +43,23 @@ const App = () => {
     }
   };
 
+  const updateBlogLikes = async (
+    userToken,
+    blogId,
+    blogData,
+    blogLikes,
+    setBlogLikes
+  ) => {
+    blogService.setToken(userToken);
+    try {
+      // send like data to server
+      const updatedBlog = await blogService.updateBlog(blogId, blogData);
+      setBlogLikes(blogLikes + 1);
+    } catch (error) {
+      console.log("Blog post like error:", error.message);
+    }
+  };
+
   // logout user from the blog
   const handleLogout = () => {
     window.localStorage.removeItem("blogAppLoginUser");
@@ -92,7 +109,13 @@ const App = () => {
         <BlogForm userData={user} blogData={getNewBlogData} />
       </Toggleable>
       {sortBlogs.map((blog) => (
-        <Blog key={blog.id} blog={blog} blogs={blogs} setBlogs={setBlogs} />
+        <Blog
+          key={blog.id}
+          blog={blog}
+          blogs={blogs}
+          setBlogs={setBlogs}
+          updateBlogLikes={updateBlogLikes}
+        />
       ))}
     </div>
   );
