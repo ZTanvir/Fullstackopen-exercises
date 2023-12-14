@@ -21,6 +21,8 @@ const LoginForm = ({ getLoginData }) => {
     } catch (error) {
       errorData = error;
       getLoginData(userData, errorData);
+      setUsername("");
+      setPassword("");
     }
   };
 
@@ -33,6 +35,7 @@ const LoginForm = ({ getLoginData }) => {
             type="text"
             name="user"
             id="user"
+            required={true}
             value={userName}
             onChange={({ target }) => setUsername(target.value)}
           />
@@ -44,11 +47,14 @@ const LoginForm = ({ getLoginData }) => {
             name="password"
             id="password"
             autoComplete="off"
+            required={true}
             value={passWord}
             onChange={({ target }) => setPassword(target.value)}
           />
         </div>
-        <button type="submit">Login</button>
+        <button className="login-submitBtn" type="submit">
+          Login
+        </button>
       </form>
     </>
   );

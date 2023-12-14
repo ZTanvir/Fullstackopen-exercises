@@ -15,7 +15,7 @@ const Notification = ({ notice, isErrorNotice }) => {
   let noticeColor = isErrorNotice ? errorStyle : successStyle;
 
   return (
-    <div style={noticeColor}>
+    <div className={isErrorNotice ? "error" : "success"} style={noticeColor}>
       <p>{notice}</p>
     </div>
   );
