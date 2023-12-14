@@ -83,7 +83,7 @@ blogRouter.put("/:id", async (request, response) => {
 
   try {
     /* 
-    update a blog only possible if the user who created the blog and
+    update a blog only possible if the user wm ho created the blog and
     the user who want to update the blog are the same person
   */
     if (user._id.toString() !== blog.user.toString()) {
