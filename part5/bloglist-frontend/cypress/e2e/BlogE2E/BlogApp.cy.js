@@ -50,5 +50,9 @@ describe("Blog app", function () {
       cy.get(".like-btn").click();
       cy.get(".like-count").should("contain", "1");
     });
+    it("Delete a blog", function () {
+      cy.get(".remove-blog-btn").click();
+      cy.contains("testBlog").should("not.exist");
+    });
   });
 });
