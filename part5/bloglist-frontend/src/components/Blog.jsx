@@ -55,7 +55,8 @@ const Blog = ({ blog, blogs, setBlogs, updateBlogLikes }) => {
   return (
     <div className="blog" style={blogStyle}>
       <label>
-        {blog.title} {blog.author}
+        <span className="blog-title">{blog.title}</span>
+        <span className="blog-author">{blog.author}</span>
         <button onClick={handleBlogDetails}>{label}</button>
       </label>
       {/* display addtional blog information based on user action */}

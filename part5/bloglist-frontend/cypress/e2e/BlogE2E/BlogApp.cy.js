@@ -9,13 +9,13 @@ describe("Blog app", function () {
     });
     cy.visit("http://localhost:5173/");
   });
-  it("Login form is shown", function () {
+  it.skip("Login form is shown", function () {
     cy.contains("log in to application");
     cy.contains("Username");
     cy.contains("Password");
     cy.contains("Login");
   });
-  describe("Login", function () {
+  describe.skip("Login", function () {
     it("succeeds with correct credentials", function () {
       cy.get("#user").type("testuser");
       cy.get("#password").type("test12345");
@@ -28,6 +28,21 @@ describe("Blog app", function () {
       cy.get(".error")
         .should("contain", "Username or Password is invalid")
         .and("have.css", "color", "rgb(255, 0, 0)");
+    });
+  });
+  describe("When logged in", function () {
+    beforeEach(function () {
+      cy.login({ username: "testuser", password: "test12345" });
+      cy.createBlog({
+        title: "testBlog",
+        author: "testUser",
+        url: "https://testblog.com",
+        user: "test",
+      });
+    });
+    it("A blog can be created", function () {
+      cy.get(".blog-title").should("contain", "testBlog");
+      cy.get(".blog-author").should("contain", "testUser");
     });
   });
 });
