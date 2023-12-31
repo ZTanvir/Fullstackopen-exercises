@@ -65,8 +65,11 @@ const Blog = ({ blog, blogs, setBlogs, updateBlogLikes }) => {
           <div>
             <a href="blog.url">{blog.url}</a>
           </div>
-          <div>
-            likes {blogLikes} <button onClick={handleBlogLikes}>like</button>
+          <div className="like-blog">
+            likes <span className="like-count">{blogLikes}</span>
+            <button className="like-btn" onClick={handleBlogLikes}>
+              like
+            </button>
           </div>
           <div>{blog.user.name}</div>
           <div>

@@ -39,10 +39,16 @@ describe("Blog app", function () {
         url: "https://testblog.com",
         user: "test",
       });
+      cy.get(".blog-title").parent().find("button").as("blogDetails");
+      cy.get("@blogDetails").click();
     });
     it("A blog can be created", function () {
       cy.get(".blog-title").should("contain", "testBlog");
       cy.get(".blog-author").should("contain", "testUser");
+    });
+    it("Users can like the blog", function () {
+      cy.get(".like-btn").click();
+      cy.get(".like-count").should("contain", "1");
     });
   });
 });
