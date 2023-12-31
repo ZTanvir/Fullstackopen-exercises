@@ -7,6 +7,11 @@ describe("Blog app", function () {
       name: "test",
       password: "test12345",
     });
+    cy.request("POST", "http://localhost:3001/api/users", {
+      username: "testuser1",
+      name: "test1",
+      password: "test12345",
+    });
     cy.visit("http://localhost:5173/");
   });
   it.skip("Login form is shown", function () {
@@ -53,6 +58,13 @@ describe("Blog app", function () {
     it("Delete a blog", function () {
       cy.get(".remove-blog-btn").click();
       cy.contains("testBlog").should("not.exist");
+    });
+    it("Only the blog owner can remove a blog", function () {
+      cy.contains("logout").click();
+      cy.login({ username: "testuser1", password: "test12345" });
+      cy.get(".blog-title").parent().find("button").as("blogDetails");
+      cy.get("@blogDetails").click();
+      cy.contains("remove").should("not.exist");
     });
   });
 });

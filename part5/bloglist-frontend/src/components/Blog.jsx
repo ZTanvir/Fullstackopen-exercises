@@ -73,9 +73,12 @@ const Blog = ({ blog, blogs, setBlogs, updateBlogLikes }) => {
           </div>
           <div>{blog.user.name}</div>
           <div>
-            <button className="remove-blog-btn" onClick={handleRemoveBlog}>
-              remove
-            </button>
+            {/* only the user who created the blog can remove the blog */}
+            {blog.user.name === tokenExtactor().name && (
+              <button className="remove-blog-btn" onClick={handleRemoveBlog}>
+                remove
+              </button>
+            )}
           </div>
         </div>
       )}
